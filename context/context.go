@@ -2,6 +2,8 @@ package context
 
 import (
 	"context"
+	"io"
+	"net/http"
 	"os"
 	"os/signal"
 )
@@ -19,4 +21,14 @@ func WithCancelBySignal(parent context.Context, sigs ...os.Signal) (ctx context.
 		cancel()
 	}()
 	return ctx
+}
+
+// NewHTTPRequest returns *http.Requst related with ctx.
+func NewHTTPRequest(ctx context.Context, method, urlStr string, body io.Reader) (*http.Request, error) {
+	req, err := http.NewRequest(method, urlStr, body)
+	if err != nil {
+		return req, err
+	}
+	req.WithContext(ctx)
+	return req, nil
 }
